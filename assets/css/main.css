@@ -1024,7 +1024,7 @@ body {
     font-size: 20px;
     font-weight: 400;
     font-family: "Roboto", sans-serif;
-    color: #ffffff;
+    color: #000000;
 }
 
 body.md-skin-dark {
@@ -1086,7 +1086,7 @@ h5 {
 }
 
 h6 {
-    font-size: 14px;
+    font-size: 35px;
 }
 
 h3, h1, h2, h3 {
@@ -3370,7 +3370,7 @@ mark, .mark {
 }
 
 .title-01__subTitle {
-    color: #c2c2c2;
+    color: #f39c12;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 10px;
