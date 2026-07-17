@@ -34,31 +34,33 @@ const langPath = path ? href(other, path) : href(other);
 </header>
 
 <script>
-  const header = document.querySelector('.site-header');
-  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
-  const nav = document.querySelector<HTMLElement>('.site-nav');
-  const serviceButton = document.querySelector<HTMLButtonElement>('.nav-services button');
-
-  const closeMenu = () => {
-    toggle?.setAttribute('aria-expanded', 'false');
-    serviceButton?.setAttribute('aria-expanded', 'false');
-    header?.classList.remove('menu-open');
-    document.documentElement.classList.remove('menu-open');
+  let closeActiveMenu = () => {};
+  const setupHeader = () => {
+    const header = document.querySelector('.site-header');
+    const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+    const nav = document.querySelector<HTMLElement>('.site-nav');
+    const serviceButton = document.querySelector<HTMLButtonElement>('.nav-services button');
+    closeActiveMenu = () => {
+      toggle?.setAttribute('aria-expanded', 'false');
+      serviceButton?.setAttribute('aria-expanded', 'false');
+      header?.classList.remove('menu-open');
+      document.documentElement.classList.remove('menu-open');
+    };
+    toggle?.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      header?.classList.toggle('menu-open', !open);
+      document.documentElement.classList.toggle('menu-open', !open);
+    });
+    serviceButton?.addEventListener('click', () => {
+      const open = serviceButton.getAttribute('aria-expanded') === 'true';
+      serviceButton.setAttribute('aria-expanded', String(!open));
+    });
+    nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeActiveMenu));
   };
-
-  toggle?.addEventListener('click', () => {
-    const open = toggle.getAttribute('aria-expanded') === 'true';
-    toggle.setAttribute('aria-expanded', String(!open));
-    header?.classList.toggle('menu-open', !open);
-    document.documentElement.classList.toggle('menu-open', !open);
-  });
-  serviceButton?.addEventListener('click', () => {
-    const open = serviceButton.getAttribute('aria-expanded') === 'true';
-    serviceButton.setAttribute('aria-expanded', String(!open));
-  });
-  nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+  document.addEventListener('astro:page-load', setupHeader);
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeMenu();
+    if (event.key === 'Escape') closeActiveMenu();
   });
 </script>
 

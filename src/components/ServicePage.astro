@@ -23,7 +23,6 @@ const service = t.services[slug];
     <div class="container service-about__grid" data-reveal>
       <p class="eyebrow">{t.servicePage.note}</p>
       <h2>{t.servicePage.closing}</h2>
-      <span class="service-about__mark" aria-hidden="true">{slug === 'bird-in-hand' ? '✶' : slug === 'fire-control' ? '◯' : '↔'}</span>
     </div>
   </section>
   <CTA lang={lang} />
@@ -35,8 +34,7 @@ const service = t.services[slug];
   .service-hero__image { width: min(1480px, calc(100vw - 48px)); height: min(72vw, 820px); margin: auto; overflow: hidden; }
   .service-hero__image picture { display: block; width: 100%; height: 100%; }
   .service-hero__image img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.74); }
-  .service-about__grid { display: grid; grid-template-columns: .7fr 1.7fr .4fr; gap: 50px; }
+  .service-about__grid { display: grid; grid-template-columns: .7fr 2.1fr; gap: 50px; }
   .service-about h2 { margin: 0; font-family: var(--serif); font-size: clamp(2.1rem, 4vw, 4.3rem); font-weight: 300; letter-spacing: -.035em; line-height: 1.15; }
-  .service-about__mark { color: var(--clay); font-family: var(--serif); font-size: 5rem; line-height: 1; text-align: right; }
-  @media (max-width: 800px) { .service-hero__heading, .service-about__grid { grid-template-columns: 1fr; } .service-hero__image { width: 100%; height: 75vh; } .service-about__mark { text-align: left; } }
+  @media (max-width: 800px) { .service-hero__heading, .service-about__grid { grid-template-columns: 1fr; } .service-hero__image { width: 100%; height: 75vh; } }
 </style>

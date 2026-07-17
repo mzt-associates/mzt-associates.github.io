@@ -20,16 +20,19 @@ const paths = images.map((number) => `/assets/img/gallery/${number === 39 ? '39.
   </dialog>
 </div>
 <script>
-  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((gallery) => {
-    const dialog = gallery.querySelector<HTMLDialogElement>('dialog');
-    const image = dialog?.querySelector('img');
-    gallery.querySelectorAll<HTMLButtonElement>('[data-src]').forEach((button) => button.addEventListener('click', () => {
-      if (image) image.src = button.dataset.src ?? '';
-      dialog?.showModal();
-    }));
-    dialog?.querySelector('button')?.addEventListener('click', () => dialog.close());
-    dialog?.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
-  });
+  const setupGalleries = () => {
+    document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((gallery) => {
+      const dialog = gallery.querySelector<HTMLDialogElement>('dialog');
+      const image = dialog?.querySelector('img');
+      gallery.querySelectorAll<HTMLButtonElement>('[data-src]').forEach((button) => button.addEventListener('click', () => {
+        if (image) image.src = button.dataset.src ?? '';
+        dialog?.showModal();
+      }));
+      dialog?.querySelector('button')?.addEventListener('click', () => dialog.close());
+      dialog?.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+    });
+  };
+  document.addEventListener('astro:page-load', setupGalleries);
 </script>
 <style>
   .gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }

@@ -2,6 +2,7 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { copy, type Lang } from '../data/site';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   lang: Lang;
@@ -28,7 +29,7 @@ const socialImage = new URL(image, Astro.site);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#f1eee7" />
+    <meta name="theme-color" content="#e8e2d7" />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang={lang} href={canonical} />
     <link rel="alternate" hreflang={alternateLang} href={alternate} />
@@ -44,31 +45,40 @@ const socialImage = new URL(image, Astro.site);
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap" rel="stylesheet" />
+    <ClientRouter />
+    <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body class:list={[`theme-${theme}`, lang === 'ja' && 'lang-ja']}>
     <a class="skip-link" href="#main">{lang === 'ja' ? '本文へ移動' : 'Skip to content'}</a>
     <Header lang={lang} path={path} theme={theme} />
     <main id="main"><slot /></main>
     <Footer lang={lang} />
-    <script is:inline>
-      document.documentElement.classList.add('js');
-      const reveal = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            reveal.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.12 });
-      document.querySelectorAll('[data-reveal]').forEach((element) => reveal.observe(element));
+    <script>
+      const setupReveals = () => {
+        const elements = document.querySelectorAll<HTMLElement>('[data-reveal]');
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          elements.forEach((element) => element.classList.add('is-visible'));
+          return;
+        }
+        const reveal = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              reveal.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12 });
+        elements.forEach((element) => reveal.observe(element));
+      };
+      document.addEventListener('astro:page-load', setupReveals);
     </script>
   </body>
 </html>
 
 <style is:global>
   :root {
-    --paper: #f1eee7;
-    --paper-deep: #e6e0d5;
+    --paper: #e8e2d7;
+    --paper-deep: #d9d0c1;
     --ink: #20231f;
     --muted: #66685f;
     --moss: #39483b;
@@ -103,8 +113,11 @@ const socialImage = new URL(image, Astro.site);
   .text-link { display: inline-flex; border-bottom: 1px solid currentColor; align-items: center; gap: 14px; font-size: .76rem; font-weight: 600; letter-spacing: .11em; text-transform: uppercase; }
   .text-link::after { content: '↗'; }
   [data-reveal] { opacity: 1; transform: none; }
-  .js [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity .75s ease, transform .75s ease; }
-  .js [data-reveal].is-visible { opacity: 1; transform: none; }
+  .js [data-reveal] { opacity: 0; transform: translateY(34px); transition: opacity .8s ease, transform .9s cubic-bezier(.18,.72,.2,1); will-change: opacity, transform; }
+  .js [data-reveal].is-visible { opacity: 1; transform: none; will-change: auto; }
+  .services-grid > [data-reveal]:nth-child(2), .contact-list > [data-reveal]:nth-child(2), .stats > [data-reveal]:nth-child(2) { transition-delay: .08s; }
+  .services-grid > [data-reveal]:nth-child(3), .contact-list > [data-reveal]:nth-child(3), .stats > [data-reveal]:nth-child(3) { transition-delay: .16s; }
+  .services-grid > [data-reveal]:nth-child(4) { transition-delay: .24s; }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
