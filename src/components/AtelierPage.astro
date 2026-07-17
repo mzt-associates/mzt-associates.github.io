@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Gallery from './Gallery.astro';
+import CTA from './CTA.astro';
+import { copy, webpSrcSet, type Lang } from '../data/site';
+const { lang } = Astro.props as { lang: Lang };
+const t = copy[lang];
+---
+<BaseLayout lang={lang} title="Atelier LEMON" description={t.atelier.lead} path="atelier-lemon/">
+  <section class="project-hero section--compact">
+    <div class="container">
+      <p class="eyebrow" data-reveal>{t.atelier.eyebrow}</p>
+      <h1 class="display" data-reveal>{t.atelier.title}</h1>
+      <p class="project-hero__lead" data-reveal>{t.atelier.lead}</p>
+      <div class="project-hero__image" data-reveal>
+        <picture>
+          <source type="image/webp" srcset={webpSrcSet('/assets/img/gallery/47.jpg')} sizes="100vw" />
+          <img src="/assets/img/gallery/47.jpg" alt="" fetchpriority="high" decoding="async" />
+        </picture>
+      </div>
+    </div>
+  </section>
+
+  <section class="project-sections section">
+    <div class="container">
+      {t.atelier.sections.map((section, index) => (
+        <article class:list={['project-section', index % 2 && 'project-section--reverse']}>
+          <div class="project-section__image" data-reveal>
+            <picture>
+              <source type="image/webp" srcset={webpSrcSet(section.image)} sizes="(max-width: 800px) 100vw, 55vw" />
+              <img src={section.image} alt="" loading="lazy" decoding="async" />
+            </picture>
+          </div>
+          <div class="project-section__copy" data-reveal>
+            <span>0{index + 1}</span>
+            <h2>{section.title}</h2>
+            <p>{section.text}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="story section">
+    <div class="container story__grid">
+      <p class="eyebrow">Story</p>
+      <div data-reveal><h2 class="heading">{t.atelier.storyTitle}</h2><p>{t.atelier.story}</p></div>
+      <div class="story__image" data-reveal>
+        <picture>
+          <source type="image/webp" srcset={webpSrcSet('/assets/img/lemon/5.jpg')} sizes="(max-width: 800px) 100vw, 30vw" />
+          <img src="/assets/img/lemon/5.jpg" alt="" loading="lazy" decoding="async" />
+        </picture>
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery-section section">
+    <div class="container">
+      <div class="gallery-heading" data-reveal><p class="eyebrow">Gallery</p><h2 class="heading">{lang === 'ja' ? '住まいの風景。' : 'Scenes of home.'}</h2></div>
+      <Gallery label={lang === 'ja' ? '施工事例' : 'Project gallery'} />
+    </div>
+  </section>
+  <CTA lang={lang} />
+</BaseLayout>
+
+<style>
+  .project-hero { padding-top: clamp(80px, 10vw, 140px); }
+  .project-hero__lead { max-width: 740px; margin: 48px 0 74px auto; color: var(--muted); font-size: clamp(1.05rem, 1.7vw, 1.35rem); line-height: 1.9; }
+  .project-hero__image { aspect-ratio: 16/8; overflow: hidden; }
+  .project-hero__image picture, .project-section__image picture, .story__image picture { display: block; width: 100%; height: 100%; }
+  .project-hero__image img { width: 100%; height: 100%; object-fit: cover; }
+  .project-sections { padding-top: 50px; }
+  .project-section { display: grid; min-height: 630px; margin-bottom: 120px; grid-template-columns: 1.1fr .9fr; gap: clamp(50px, 8vw, 130px); align-items: center; }
+  .project-section--reverse { grid-template-columns: .9fr 1.1fr; }
+  .project-section--reverse .project-section__image { order: 2; }
+  .project-section__image { height: 100%; max-height: 720px; overflow: hidden; }
+  .project-section__image img { width: 100%; height: 100%; object-fit: cover; }
+  .project-section__copy > span { color: var(--clay); font-size: .64rem; letter-spacing: .16em; }
+  .project-section h2 { max-width: 520px; margin: 28px 0; font-family: var(--serif); font-size: clamp(2.3rem, 4.5vw, 4.5rem); font-weight: 300; letter-spacing: -.04em; line-height: 1; }
+  .project-section p { max-width: 520px; margin: 0; color: var(--muted); font-size: .94rem; line-height: 2; }
+  .story { background: #2d352d; color: #eeece4; }
+  .story__grid { display: grid; grid-template-columns: .6fr 1.3fr 1fr; gap: clamp(40px, 6vw, 100px); }
+  .story .eyebrow { color: #d8b18f; }
+  .story__grid > div > p { max-width: 650px; margin-top: 40px; color: rgba(238,236,228,.66); line-height: 2; }
+  .story__image { aspect-ratio: 3/4; }
+  .story__image img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.7); }
+  .gallery-section { background: #e7e2d8; }
+  .gallery-heading { display: grid; margin-bottom: 70px; grid-template-columns: .65fr 2fr; }
+  @media (max-width: 800px) {
+    .project-hero__image { aspect-ratio: 4/5; }
+    .project-section, .project-section--reverse { min-height: 0; margin-bottom: 90px; grid-template-columns: 1fr; gap: 36px; }
+    .project-section--reverse .project-section__image { order: 0; }
+    .project-section__image { aspect-ratio: 4/5; }
+    .story__grid, .gallery-heading { grid-template-columns: 1fr; }
+    .story__image { max-width: 420px; }
+  }
+</style>

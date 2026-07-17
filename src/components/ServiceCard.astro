@@ -1,0 +1,32 @@
+---
+import { webpSrcSet } from '../data/site';
+interface Props { name: string; label: string; description: string; image: string; href: string; index: number; }
+const { name, label, description, image, href, index } = Astro.props;
+---
+<a class="service-card" href={href} data-reveal>
+  <div class="service-card__image">
+    <picture>
+      <source type="image/webp" srcset={webpSrcSet(image)} sizes="(max-width: 840px) 100vw, 50vw" />
+      <img src={image} alt="" loading={index > 1 ? 'lazy' : 'eager'} decoding="async" />
+    </picture>
+  </div>
+  <div class="service-card__body">
+    <span class="service-card__number">0{index + 1}</span>
+    <div><p>{label}</p><h3>{name}</h3><span>{description}</span></div>
+    <span class="service-card__arrow" aria-hidden="true">↗</span>
+  </div>
+</a>
+<style>
+  .service-card { display: block; border-top: 1px solid var(--line); }
+  .service-card__image { aspect-ratio: 4 / 3; overflow: hidden; background: var(--paper-deep); }
+  .service-card__image picture { display: block; width: 100%; height: 100%; }
+  .service-card img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.74); transition: filter .5s, transform .7s cubic-bezier(.2,.7,.2,1); }
+  .service-card:hover img { filter: saturate(.95); transform: scale(1.035); }
+  .service-card__body { display: grid; min-height: 202px; padding: 22px 0 28px; grid-template-columns: 40px 1fr auto; gap: 10px; }
+  .service-card__number { color: var(--clay); font-size: .64rem; letter-spacing: .12em; }
+  .service-card p { margin: 0 0 7px; color: var(--muted); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; }
+  .service-card h3 { margin: 0; font-family: var(--serif); font-size: clamp(1.65rem, 2.5vw, 2.5rem); font-weight: 300; letter-spacing: -.035em; line-height: 1; }
+  .service-card__body div > span { display: block; max-width: 360px; margin-top: 18px; color: var(--muted); font-size: .8rem; line-height: 1.7; }
+  .service-card__arrow { transition: transform .25s; }
+  .service-card:hover .service-card__arrow { transform: translate(4px,-4px); }
+</style>

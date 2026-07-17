@@ -1,0 +1,118 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { copy, type Lang } from '../data/site';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description: string;
+  path?: string;
+  image?: string;
+  theme?: 'light' | 'dark';
+}
+
+const { lang, title, description, path = '', image = '/og.png', theme = 'light' } = Astro.props;
+const t = copy[lang];
+const pageTitle = title ? `${title} — MZT & Associates` : 'MZT & Associates';
+const routePrefix = lang === 'ja' ? 'jp' : 'en';
+const canonical = new URL(`/${routePrefix}/${path}`.replace(/\/+$/, '/'), Astro.site);
+const alternateLang: Lang = lang === 'ja' ? 'en' : 'ja';
+const alternatePrefix = alternateLang === 'ja' ? 'jp' : 'en';
+const alternate = new URL(`/${alternatePrefix}/${path}`.replace(/\/+$/, '/'), Astro.site);
+const socialImage = new URL(image, Astro.site);
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f1eee7" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang={lang} href={canonical} />
+    <link rel="alternate" hreflang={alternateLang} href={alternate} />
+    <link rel="alternate" hreflang="x-default" href={new URL('/jp/', Astro.site)} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={t.locale} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>{pageTitle}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap" rel="stylesheet" />
+  </head>
+  <body class:list={[`theme-${theme}`, lang === 'ja' && 'lang-ja']}>
+    <a class="skip-link" href="#main">{lang === 'ja' ? '本文へ移動' : 'Skip to content'}</a>
+    <Header lang={lang} path={path} theme={theme} />
+    <main id="main"><slot /></main>
+    <Footer lang={lang} />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      const reveal = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            reveal.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('[data-reveal]').forEach((element) => reveal.observe(element));
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --paper: #f1eee7;
+    --paper-deep: #e6e0d5;
+    --ink: #20231f;
+    --muted: #66685f;
+    --moss: #39483b;
+    --clay: #a7603f;
+    --line: rgba(32, 35, 31, 0.18);
+    --serif: 'Newsreader', 'Noto Serif JP', Georgia, serif;
+    --sans: 'Manrope', 'Noto Sans JP', system-ui, sans-serif;
+    --content: min(1280px, calc(100vw - 48px));
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; background: var(--paper); }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+  body.lang-ja { font-family: 'Noto Sans JP', var(--sans); font-weight: 300; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  button { color: inherit; font: inherit; }
+  ::selection { background: var(--clay); color: white; }
+  .skip-link { position: fixed; top: 8px; left: 8px; z-index: 100; padding: 10px 16px; background: var(--ink); color: white; transform: translateY(-150%); }
+  .skip-link:focus { transform: translateY(0); }
+  .container { width: var(--content); margin-inline: auto; }
+  .section { padding: clamp(88px, 11vw, 168px) 0; }
+  .section--compact { padding: clamp(64px, 8vw, 112px) 0; }
+  .eyebrow { display: flex; gap: 14px; align-items: center; margin: 0 0 22px; color: var(--clay); font-size: .69rem; font-weight: 600; letter-spacing: .19em; line-height: 1.3; text-transform: uppercase; }
+  .eyebrow::before { width: 34px; height: 1px; background: currentColor; content: ''; }
+  .display { max-width: 980px; margin: 0; font-family: var(--serif); font-size: clamp(3.5rem, 8.4vw, 8rem); font-weight: 300; letter-spacing: -.045em; line-height: .9; white-space: pre-line; }
+  .heading { margin: 0; font-family: var(--serif); font-size: clamp(2.8rem, 5.6vw, 5.7rem); font-weight: 300; letter-spacing: -.04em; line-height: .98; }
+  .lang-ja .display, .lang-ja .heading { font-family: 'Noto Sans JP', sans-serif; font-weight: 300; letter-spacing: -.06em; line-height: 1.18; }
+  .lede { max-width: 650px; margin: 32px 0 0; color: var(--muted); font-size: clamp(1rem, 1.4vw, 1.2rem); line-height: 1.9; }
+  .button { display: inline-flex; min-height: 54px; padding: 0 24px; border: 1px solid var(--ink); align-items: center; justify-content: center; gap: 18px; font-size: .74rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; transition: background .25s, color .25s; }
+  .button::after { content: '↗'; font-size: 1rem; }
+  .button:hover, .button:focus-visible { background: var(--ink); color: var(--paper); }
+  .text-link { display: inline-flex; border-bottom: 1px solid currentColor; align-items: center; gap: 14px; font-size: .76rem; font-weight: 600; letter-spacing: .11em; text-transform: uppercase; }
+  .text-link::after { content: '↗'; }
+  [data-reveal] { opacity: 1; transform: none; }
+  .js [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity .75s ease, transform .75s ease; }
+  .js [data-reveal].is-visible { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    .js [data-reveal] { opacity: 1; transform: none; }
+  }
+  @media (max-width: 720px) {
+    :root { --content: calc(100vw - 32px); }
+    .display { font-size: clamp(3rem, 15vw, 5.25rem); }
+    .heading { font-size: clamp(2.5rem, 12vw, 4.2rem); }
+  }
+</style>

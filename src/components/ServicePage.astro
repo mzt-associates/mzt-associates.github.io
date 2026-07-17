@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CTA from './CTA.astro';
+import { copy, webpSrcSet, type Lang, type ServiceSlug } from '../data/site';
+const { lang, slug } = Astro.props as { lang: Lang; slug: ServiceSlug };
+const t = copy[lang];
+const service = t.services[slug];
+---
+<BaseLayout lang={lang} title={service.name} description={service.description} path={`services/${slug}/`}>
+  <section class="service-hero section--compact">
+    <div class="container service-hero__heading">
+      <div><p class="eyebrow">{service.label}</p><h1 class="display">{service.name}</h1></div>
+      <p>{service.description}</p>
+    </div>
+    <div class="service-hero__image" data-reveal>
+      <picture>
+        <source type="image/webp" srcset={webpSrcSet(service.image)} sizes="100vw" />
+        <img src={service.image} alt="" fetchpriority="high" decoding="async" />
+      </picture>
+    </div>
+  </section>
+  <section class="service-about section">
+    <div class="container service-about__grid" data-reveal>
+      <p class="eyebrow">{t.servicePage.note}</p>
+      <h2>{t.servicePage.closing}</h2>
+      <span class="service-about__mark" aria-hidden="true">{slug === 'bird-in-hand' ? '✶' : slug === 'fire-control' ? '◯' : '↔'}</span>
+    </div>
+  </section>
+  <CTA lang={lang} />
+</BaseLayout>
+<style>
+  .service-hero { padding-bottom: 0; }
+  .service-hero__heading { display: grid; padding-top: 60px; padding-bottom: 70px; grid-template-columns: 1.5fr .5fr; gap: 60px; align-items: end; }
+  .service-hero__heading > p { margin: 0 0 8px; color: var(--muted); line-height: 1.9; }
+  .service-hero__image { width: min(1480px, calc(100vw - 48px)); height: min(72vw, 820px); margin: auto; overflow: hidden; }
+  .service-hero__image picture { display: block; width: 100%; height: 100%; }
+  .service-hero__image img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.74); }
+  .service-about__grid { display: grid; grid-template-columns: .7fr 1.7fr .4fr; gap: 50px; }
+  .service-about h2 { margin: 0; font-family: var(--serif); font-size: clamp(2.1rem, 4vw, 4.3rem); font-weight: 300; letter-spacing: -.035em; line-height: 1.15; }
+  .service-about__mark { color: var(--clay); font-family: var(--serif); font-size: 5rem; line-height: 1; text-align: right; }
+  @media (max-width: 800px) { .service-hero__heading, .service-about__grid { grid-template-columns: 1fr; } .service-hero__image { width: 100%; height: 75vh; } .service-about__mark { text-align: left; } }
+</style>

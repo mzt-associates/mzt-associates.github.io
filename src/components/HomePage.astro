@@ -1,0 +1,132 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ServiceCard from './ServiceCard.astro';
+import CTA from './CTA.astro';
+import { copy, href, webpSrcSet, type Lang } from '../data/site';
+const { lang } = Astro.props as { lang: Lang };
+const t = copy[lang];
+const serviceEntries = [
+  { ...t.services.atelier, link: href(lang, 'atelier-lemon/') },
+  { ...t.services['bird-in-hand'], link: href(lang, 'services/bird-in-hand/') },
+  { ...t.services['fire-control'], link: href(lang, 'services/fire-control/') },
+  { ...t.services['kiwas-trading'], link: href(lang, 'services/kiwas-trading/') },
+];
+---
+<BaseLayout lang={lang} description={t.home.intro} theme="dark">
+  <section class="hero">
+    <div class="hero__image" aria-hidden="true">
+      <picture>
+        <source type="image/webp" srcset={webpSrcSet('/assets/img/gallery/47.jpg')} sizes="100vw" />
+        <img src="/assets/img/gallery/47.jpg" alt="" fetchpriority="high" decoding="async" />
+      </picture>
+    </div>
+    <div class="hero__shade"></div>
+    <div class="container hero__content">
+      <p class="eyebrow">{t.home.eyebrow}</p>
+      <h1 class="display">{t.home.title}</h1>
+      <div class="hero__bottom">
+        <p>{t.home.intro}</p>
+        <a href="#work" aria-label={lang === 'ja' ? '事業を見る' : 'Explore our work'}><span></span>{lang === 'ja' ? '事業を見る' : 'Explore'}</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="work" class="section work">
+    <div class="container">
+      <div class="section-heading" data-reveal>
+        <p class="eyebrow">{t.home.workEyebrow}</p>
+        <h2 class="heading">{t.home.workTitle}</h2>
+      </div>
+      <div class="services-grid">
+        {serviceEntries.map((service, index) => <ServiceCard {...service} href={service.link} index={index} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="philosophy">
+    <div class="philosophy__image" data-reveal>
+      <picture>
+        <source type="image/webp" srcset={webpSrcSet('/assets/img/gallery/27.jpg')} sizes="(max-width: 840px) 100vw, 54vw" />
+        <img src="/assets/img/gallery/27.jpg" alt="" loading="lazy" decoding="async" />
+      </picture>
+    </div>
+    <div class="philosophy__copy" data-reveal>
+      <p class="eyebrow">{t.home.philosophyEyebrow}</p>
+      <h2 class="heading">{t.home.philosophyTitle}</h2>
+      <p class="lede">{t.home.philosophyBody}</p>
+      <a class="text-link" href={href(lang, 'atelier-lemon/')}>{lang === 'ja' ? '私たちのものづくり' : 'Discover our approach'}</a>
+    </div>
+  </section>
+
+  <section class="section featured">
+    <div class="container">
+      <div class="featured__heading" data-reveal>
+        <div><p class="eyebrow">{t.home.featuredEyebrow}</p><h2 class="heading">{t.home.featuredTitle}</h2></div>
+        <span class="featured__index">01 / 03</span>
+      </div>
+      <a class="featured__image" href={href(lang, 'atelier-lemon/')} data-reveal>
+        <picture>
+          <source type="image/webp" srcset={webpSrcSet('/assets/img/gallery/39.png')} sizes="100vw" />
+          <img src="/assets/img/gallery/39.png" alt={t.home.heroAlt} loading="lazy" decoding="async" />
+        </picture>
+        <span>Atelier LEMON <b>↗</b></span>
+      </a>
+      <div class="stats">
+        {t.home.stats.map(([number, label]) => <div data-reveal><strong>{number}</strong><span>{label}</span></div>)}
+      </div>
+    </div>
+  </section>
+  <CTA lang={lang} />
+</BaseLayout>
+
+<style>
+  .hero { position: relative; min-height: 100svh; background: #293229; color: white; overflow: hidden; }
+  .hero__image, .hero__shade { position: absolute; inset: 0; }
+  .hero__image picture, .philosophy__image picture, .featured__image picture { display: block; width: 100%; height: 100%; }
+  .hero__image img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 48%; animation: settle 1.5s cubic-bezier(.2,.7,.2,1) both; }
+  .hero__shade { background: linear-gradient(90deg, rgba(15,20,15,.73) 0%, rgba(15,20,15,.28) 63%, rgba(15,20,15,.12)), linear-gradient(0deg, rgba(15,20,15,.48), transparent 50%); }
+  .hero__content { position: relative; display: flex; min-height: 100svh; padding-top: 190px; padding-bottom: 48px; flex-direction: column; justify-content: center; }
+  .hero .eyebrow { color: #d7b18e; }
+  .hero__bottom { display: flex; margin-top: clamp(44px, 8vh, 90px); align-items: flex-end; justify-content: space-between; }
+  .hero__bottom p { max-width: 510px; margin: 0; color: rgba(255,255,255,.78); font-size: .92rem; line-height: 1.9; }
+  .hero__bottom a { display: flex; align-items: center; gap: 12px; font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; }
+  .hero__bottom a span { position: relative; display: block; width: 42px; height: 42px; border: 1px solid rgba(255,255,255,.5); border-radius: 50%; }
+  .hero__bottom a span::after { position: absolute; top: 14px; left: 18px; width: 5px; height: 5px; border-right: 1px solid white; border-bottom: 1px solid white; content: ''; transform: rotate(45deg); }
+  .section-heading { display: grid; margin-bottom: 80px; grid-template-columns: 1fr 2fr; gap: 40px; }
+  .section-heading .eyebrow { margin-top: 12px; }
+  .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 74px 24px; }
+  .philosophy { display: grid; min-height: 760px; grid-template-columns: 1.08fr .92fr; background: #dcd6ca; }
+  .philosophy__image { min-height: 620px; }
+  .philosophy__image img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.72); }
+  .philosophy__copy { display: flex; padding: clamp(70px, 8vw, 130px); flex-direction: column; justify-content: center; }
+  .philosophy__copy .heading { max-width: 620px; }
+  .philosophy__copy .text-link { margin-top: 44px; width: fit-content; }
+  .featured__heading { display: flex; margin-bottom: 62px; align-items: flex-end; justify-content: space-between; gap: 30px; }
+  .featured__heading .heading { max-width: 760px; }
+  .featured__index { color: var(--muted); font-size: .7rem; letter-spacing: .12em; }
+  .featured__image { position: relative; display: block; aspect-ratio: 16 / 8; overflow: hidden; }
+  .featured__image img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s cubic-bezier(.2,.7,.2,1); }
+  .featured__image:hover img { transform: scale(1.025); }
+  .featured__image > span { position: absolute; right: 0; bottom: 0; display: flex; min-width: 240px; padding: 20px 24px; background: var(--paper); justify-content: space-between; font-family: var(--serif); font-size: 1.2rem; }
+  .featured__image b { font-family: var(--sans); font-weight: 400; }
+  .stats { display: grid; margin-top: 76px; border-top: 1px solid var(--line); grid-template-columns: repeat(3, 1fr); }
+  .stats > div { display: flex; padding: 34px 0; border-right: 1px solid var(--line); flex-direction: column; gap: 4px; }
+  .stats > div:not(:first-child) { padding-left: 40px; }
+  .stats > div:last-child { border-right: 0; }
+  .stats strong { font-family: var(--serif); font-size: clamp(2.4rem, 4vw, 4.2rem); font-weight: 300; letter-spacing: -.04em; }
+  .stats span { color: var(--muted); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+  @keyframes settle { from { opacity: .45; transform: scale(1.06); } to { opacity: 1; transform: scale(1); } }
+  @media (max-width: 840px) {
+    .hero__content { padding-top: 130px; }
+    .hero__bottom { align-items: flex-start; flex-direction: column; gap: 34px; }
+    .section-heading, .services-grid, .philosophy { grid-template-columns: 1fr; }
+    .section-heading { margin-bottom: 55px; }
+    .services-grid { gap: 48px; }
+    .philosophy__image { min-height: 70vw; }
+    .philosophy__copy { padding: 72px 24px; }
+    .featured__heading { align-items: flex-start; flex-direction: column; }
+    .featured__image { aspect-ratio: 4 / 5; }
+    .stats { grid-template-columns: 1fr; }
+    .stats > div, .stats > div:not(:first-child) { padding: 24px 0; border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+</style>

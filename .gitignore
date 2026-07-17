@@ -45,3 +45,16 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# =========================
+# Astro project
+# =========================
+
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/

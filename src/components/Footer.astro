@@ -1,0 +1,32 @@
+---
+import { copy, href, type Lang } from '../data/site';
+const { lang } = Astro.props as { lang: Lang };
+const t = copy[lang];
+---
+<footer class="footer">
+  <div class="container footer__grid">
+    <div>
+      <a class="footer__brand" href={href(lang)}>MZT <span>& Associates</span></a>
+      <p>{t.footer}</p>
+    </div>
+    <div class="footer__contact">
+      <a href="mailto:kaz@mzt-associates.com">kaz@mzt-associates.com</a>
+      <a href="tel:+818097161945">+81 80 9716 1945</a>
+    </div>
+    <div class="footer__meta">
+      <span>Nagano · Japan</span>
+      <span>© {new Date().getFullYear()} MZT & Associates</span>
+    </div>
+  </div>
+</footer>
+<style>
+  .footer { padding: 76px 0 34px; background: #242922; color: #e9e6dc; }
+  .footer__grid { display: grid; grid-template-columns: 1.3fr .8fr .8fr; gap: 40px; }
+  .footer__brand { font-family: var(--serif); font-size: 2.5rem; letter-spacing: -.045em; }
+  .footer__brand span { font-family: var(--sans); font-size: .65rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+  .footer p { max-width: 320px; margin: 20px 0 0; color: rgba(233,230,220,.64); font-size: .82rem; }
+  .footer__contact, .footer__meta { display: flex; flex-direction: column; gap: 10px; font-size: .74rem; letter-spacing: .05em; }
+  .footer__contact a { width: fit-content; border-bottom: 1px solid rgba(255,255,255,.3); }
+  .footer__meta { color: rgba(233,230,220,.55); align-items: flex-end; justify-content: flex-end; }
+  @media (max-width: 760px) { .footer__grid { grid-template-columns: 1fr; } .footer__meta { align-items: flex-start; } }
+</style>

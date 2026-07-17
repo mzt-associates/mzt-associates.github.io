@@ -1,0 +1,48 @@
+---
+import { webpSrc, webpSrcSet } from '../data/site';
+interface Props { images?: number[]; label: string; }
+const { images = [1, 7, 10, 14, 19, 22, 39, 47, 55, 61], label } = Astro.props;
+const paths = images.map((number) => `/assets/img/gallery/${number === 39 ? '39.png' : `${number}.jpg`}`);
+---
+<div class="gallery" data-gallery>
+  {paths.map((src, index) => (
+    <button type="button" class:list={['gallery__item', index % 5 === 0 && 'gallery__item--wide']} data-src={webpSrc(src)} aria-label={`${label} ${index + 1}`}>
+      <picture>
+        <source type="image/webp" srcset={webpSrcSet(src)} sizes={index % 5 === 0 ? '(max-width: 720px) 100vw, 50vw' : '(max-width: 720px) 50vw, 25vw'} />
+        <img src={src} alt="" loading="lazy" decoding="async" />
+      </picture>
+      <span aria-hidden="true">View</span>
+    </button>
+  ))}
+  <dialog class="lightbox" aria-label={label}>
+    <button class="lightbox__close" type="button" aria-label="Close">×</button>
+    <img src="" alt="" />
+  </dialog>
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((gallery) => {
+    const dialog = gallery.querySelector<HTMLDialogElement>('dialog');
+    const image = dialog?.querySelector('img');
+    gallery.querySelectorAll<HTMLButtonElement>('[data-src]').forEach((button) => button.addEventListener('click', () => {
+      if (image) image.src = button.dataset.src ?? '';
+      dialog?.showModal();
+    }));
+    dialog?.querySelector('button')?.addEventListener('click', () => dialog.close());
+    dialog?.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+  });
+</script>
+<style>
+  .gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .gallery__item { position: relative; aspect-ratio: 1; padding: 0; border: 0; overflow: hidden; background: var(--paper-deep); cursor: zoom-in; }
+  .gallery__item--wide { grid-column: span 2; aspect-ratio: 2 / 1; }
+  .gallery__item picture { display: block; width: 100%; height: 100%; }
+  .gallery__item img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.78); transition: filter .4s, transform .6s; }
+  .gallery__item:hover img { filter: saturate(1); transform: scale(1.025); }
+  .gallery__item span { position: absolute; right: 12px; bottom: 10px; color: white; font-size: .6rem; letter-spacing: .14em; opacity: 0; text-transform: uppercase; transition: opacity .25s; }
+  .gallery__item:hover span { opacity: 1; }
+  .lightbox { width: min(92vw, 1100px); height: min(88vh, 850px); padding: 0; border: 0; background: transparent; overflow: visible; }
+  .lightbox::backdrop { background: rgba(15,17,14,.9); backdrop-filter: blur(5px); }
+  .lightbox img { width: 100%; height: 100%; object-fit: contain; }
+  .lightbox__close { position: absolute; z-index: 1; top: -42px; right: 0; width: 40px; height: 40px; border: 0; background: transparent; color: white; cursor: pointer; font-size: 2rem; font-weight: 200; }
+  @media (max-width: 720px) { .gallery { grid-template-columns: repeat(2, 1fr); gap: 6px; } }
+</style>

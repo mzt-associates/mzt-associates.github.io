@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { copy, webpSrcSet, type Lang } from '../data/site';
+const { lang } = Astro.props as { lang: Lang };
+const t = copy[lang];
+const details = [
+  [t.contact.email, 'kaz@mzt-associates.com', 'mailto:kaz@mzt-associates.com'],
+  [t.contact.address, t.contact.addressValue, 'https://maps.google.com/?q=Nagano,Japan'],
+  [t.contact.mobile, '080-9716-1945', 'tel:+818097161945'],
+  [t.contact.phone, '046-211-0898', 'tel:+81462110898'],
+];
+---
+<BaseLayout lang={lang} title={t.nav.contact} description={t.contact.intro} path="contact/">
+  <section class="contact-hero section">
+    <div class="container contact-hero__grid">
+      <div data-reveal><p class="eyebrow">{t.contact.eyebrow}</p><h1 class="display">{t.contact.title}</h1></div>
+      <p class="lede" data-reveal>{t.contact.intro}</p>
+    </div>
+  </section>
+  <section class="contact-details section--compact">
+    <div class="container contact-details__grid">
+      {details.map(([label, value, link], index) => (
+        <a href={link} class="contact-detail" data-reveal target={index === 1 ? '_blank' : undefined}>
+          <span>0{index + 1}</span><p>{label}</p><strong>{value}</strong><i>↗</i>
+        </a>
+      ))}
+    </div>
+  </section>
+  <section class="contact-image">
+    <picture>
+      <source type="image/webp" srcset={webpSrcSet('/assets/img/gallery/27.jpg')} sizes="100vw" />
+      <img src="/assets/img/gallery/27.jpg" alt="" loading="lazy" decoding="async" />
+    </picture>
+  </section>
+</BaseLayout>
+<style>
+  .contact-hero__grid { display: grid; grid-template-columns: 1.5fr .5fr; gap: 60px; align-items: end; }
+  .contact-hero .display { max-width: 1000px; }
+  .contact-hero .lede { margin-bottom: 8px; }
+  .contact-details { padding-top: 0; }
+  .contact-details__grid { display: grid; border-top: 1px solid var(--line); grid-template-columns: repeat(2, 1fr); }
+  .contact-detail { position: relative; display: grid; min-height: 260px; padding: 28px 32px 32px 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); grid-template-columns: 45px 1fr auto; align-content: space-between; }
+  .contact-detail:nth-child(even) { padding-left: 32px; border-right: 0; }
+  .contact-detail > span { color: var(--clay); font-size: .62rem; letter-spacing: .14em; }
+  .contact-detail p { margin: 0; color: var(--muted); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
+  .contact-detail strong { grid-column: 2; align-self: end; font-family: var(--serif); font-size: clamp(1.5rem, 2.6vw, 2.6rem); font-weight: 300; line-height: 1.3; white-space: pre-line; }
+  .contact-detail i { align-self: end; font-style: normal; transition: transform .2s; }
+  .contact-detail:hover i { transform: translate(4px,-4px); }
+  .contact-image { height: min(70vw, 760px); overflow: hidden; }
+  .contact-image picture { display: block; width: 100%; height: 100%; }
+  .contact-image img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.72); }
+  @media (max-width: 800px) { .contact-hero__grid, .contact-details__grid { grid-template-columns: 1fr; } .contact-detail, .contact-detail:nth-child(even) { padding: 24px 0; border-right: 0; } }
+</style>
