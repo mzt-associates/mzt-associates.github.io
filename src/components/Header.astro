@@ -38,19 +38,28 @@ const langPath = path ? href(other, path) : href(other);
   const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
   const nav = document.querySelector<HTMLElement>('.site-nav');
   const serviceButton = document.querySelector<HTMLButtonElement>('.nav-services button');
+
+  const closeMenu = () => {
+    toggle?.setAttribute('aria-expanded', 'false');
+    serviceButton?.setAttribute('aria-expanded', 'false');
+    header?.classList.remove('menu-open');
+    document.documentElement.classList.remove('menu-open');
+  };
+
   toggle?.addEventListener('click', () => {
     const open = toggle.getAttribute('aria-expanded') === 'true';
     toggle.setAttribute('aria-expanded', String(!open));
     header?.classList.toggle('menu-open', !open);
+    document.documentElement.classList.toggle('menu-open', !open);
   });
   serviceButton?.addEventListener('click', () => {
     const open = serviceButton.getAttribute('aria-expanded') === 'true';
     serviceButton.setAttribute('aria-expanded', String(!open));
   });
-  nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
-    toggle?.setAttribute('aria-expanded', 'false');
-    header?.classList.remove('menu-open');
-  }));
+  nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeMenu();
+  });
 </script>
 
 <style>
@@ -79,16 +88,21 @@ const langPath = path ? href(other, path) : href(other);
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
   @media (max-width: 840px) {
     .site-header { min-height: 78px; padding-inline: 20px; grid-template-columns: 1fr auto; }
+    .site-header--dark { backdrop-filter: none; -webkit-backdrop-filter: none; }
+    .brand { position: relative; z-index: 2; }
     .menu-toggle { z-index: 2; display: grid; width: 44px; height: 44px; padding: 12px 8px; border: 0; background: transparent; align-content: center; gap: 7px; }
+    .menu-open .brand, .menu-open .menu-toggle { color: var(--ink); }
     .menu-toggle span:not(.sr-only) { display: block; height: 1px; background: currentColor; transition: transform .2s; }
     .menu-open .menu-toggle span:nth-last-child(2) { transform: translateY(4px) rotate(45deg); }
     .menu-open .menu-toggle span:last-child { transform: translateY(-4px) rotate(-45deg); }
-    .site-nav { position: fixed; z-index: 1; inset: 0; display: flex; padding: 120px 28px 40px; background: var(--paper); color: var(--ink); flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0; opacity: 0; pointer-events: none; transform: translateY(-14px); transition: opacity .2s, transform .2s; }
+    .site-nav { position: fixed; z-index: 1; inset: 0; display: flex; width: 100vw; height: 100vh; height: 100dvh; padding: calc(100px + env(safe-area-inset-top)) 28px calc(32px + env(safe-area-inset-bottom)); overflow-y: auto; overscroll-behavior: contain; background: var(--paper); color: var(--ink); flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0; opacity: 0; pointer-events: none; transform: translateY(-14px); transition: opacity .2s, transform .2s; }
     .menu-open .site-nav { opacity: 1; pointer-events: auto; transform: none; }
     .site-nav > a, .nav-services > button { display: flex; width: 100%; padding: 18px 0; border-bottom: 1px solid var(--line); justify-content: space-between; font-family: var(--serif); font-size: 1.8rem; font-weight: 300; letter-spacing: -.02em; text-align: left; text-transform: none; }
     .site-nav > a::after, .nav-services > button::after { display: none; }
-    .nav-services__menu { position: static; width: 100%; padding: 0 0 0 18px; background: transparent; box-shadow: none; opacity: 1; pointer-events: auto; transform: none; }
+    .nav-services__menu { position: static; display: none; width: 100%; padding: 0 0 0 18px; background: transparent; box-shadow: none; opacity: 1; pointer-events: auto; transform: none; }
+    .nav-services button[aria-expanded='true'] + .nav-services__menu { display: grid; }
     .nav-services__menu a { display: block; padding: 10px 0; font-size: .8rem; }
     .language, .site-header--dark .language { width: fit-content !important; margin-top: 18px; padding: 10px 14px !important; border: 1px solid var(--ink) !important; background: transparent; color: var(--ink); font-family: var(--sans) !important; font-size: .75rem !important; font-weight: 600 !important; letter-spacing: .12em !important; }
+    :global(html.menu-open), :global(html.menu-open body) { overflow: hidden; }
   }
 </style>
