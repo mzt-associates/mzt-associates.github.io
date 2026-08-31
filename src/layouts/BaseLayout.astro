@@ -13,7 +13,7 @@ interface Props {
   theme?: 'light' | 'dark';
 }
 
-const { lang, title, description, path = '', image = '/og.png', theme = 'light' } = Astro.props;
+const { lang, title, description, path = '', image = '/og.jpg', theme = 'light' } = Astro.props;
 const t = copy[lang];
 const pageTitle = title ? `${title} — MZT & Associates` : 'MZT & Associates';
 const routePrefix = lang === 'ja' ? 'jp' : 'en';
@@ -22,31 +22,59 @@ const alternateLang: Lang = lang === 'ja' ? 'en' : 'ja';
 const alternatePrefix = alternateLang === 'ja' ? 'jp' : 'en';
 const alternate = new URL(`/${alternatePrefix}/${path}`.replace(/\/+$/, '/'), Astro.site);
 const socialImage = new URL(image, Astro.site);
+const socialImageAlt = lang === 'ja'
+  ? '森の中に佇む木造住宅とMZT & Associatesのロゴ'
+  : 'MZT & Associates logo with a timber house in a forest';
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'MZT & Associates',
+  url: new URL('/', Astro.site).href,
+  email: 'kaz@mzt-associates.com',
+  telephone: '+81-80-9716-1945',
+  address: {
+    '@type': 'PostalAddress',
+    addressRegion: 'Nagano',
+    addressCountry: 'JP',
+  },
+  areaServed: 'Japan',
+};
 ---
 <!doctype html>
 <html lang={lang}>
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#e8e2d7" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang={lang} href={canonical} />
     <link rel="alternate" hreflang={alternateLang} href={alternate} />
     <link rel="alternate" hreflang="x-default" href={new URL('/jp/', Astro.site)} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap.xml" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MZT & Associates" />
     <meta property="og:locale" content={t.locale} />
+    <meta property="og:locale:alternate" content={copy[alternateLang].locale} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={socialImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:image:alt" content={socialImageAlt} />
     <title>{pageTitle}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap" rel="stylesheet" />
     <ClientRouter />
     <script is:inline>document.documentElement.classList.add('js');</script>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   </head>
   <body class:list={[`theme-${theme}`, lang === 'ja' && 'lang-ja']}>
     <a class="skip-link" href="#main">{lang === 'ja' ? '本文へ移動' : 'Skip to content'}</a>
@@ -76,25 +104,41 @@ const socialImage = new URL(image, Astro.site);
 </html>
 
 <style is:global>
+  @font-face {
+    font-family: 'Manrope';
+    src: url('/fonts/manrope-latin.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 400 800;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Newsreader';
+    src: url('/fonts/newsreader-latin.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 300 400;
+    font-display: swap;
+  }
   :root {
     --paper: #e8e2d7;
     --paper-deep: #d9d0c1;
     --ink: #20231f;
-    --muted: #66685f;
+    --muted: #595b52;
     --moss: #39483b;
-    --clay: #a7603f;
+    --clay: #88482f;
     --line: rgba(32, 35, 31, 0.18);
-    --serif: 'Newsreader', 'Noto Serif JP', Georgia, serif;
-    --sans: 'Manrope', 'Noto Sans JP', system-ui, sans-serif;
+    --serif: 'Newsreader', Georgia, serif;
+    --sans: 'Manrope', system-ui, sans-serif;
+    --jp-sans: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', YuGothic, Meiryo, sans-serif;
     --content: min(1280px, calc(100vw - 48px));
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; background: var(--paper); }
   body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
-  body.lang-ja { font-family: 'Noto Sans JP', var(--sans); font-weight: 300; }
+  body.lang-ja { font-family: var(--jp-sans); font-weight: 300; }
   img { display: block; max-width: 100%; }
   a { color: inherit; text-decoration: none; }
   button { color: inherit; font: inherit; }
+  :focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
   ::selection { background: var(--clay); color: white; }
   .skip-link { position: fixed; top: 8px; left: 8px; z-index: 100; padding: 10px 16px; background: var(--ink); color: white; transform: translateY(-150%); }
   .skip-link:focus { transform: translateY(0); }
@@ -105,7 +149,7 @@ const socialImage = new URL(image, Astro.site);
   .eyebrow::before { width: 34px; height: 1px; background: currentColor; content: ''; }
   .display { max-width: 980px; margin: 0; font-family: var(--serif); font-size: clamp(3.5rem, 8.4vw, 8rem); font-weight: 300; letter-spacing: -.045em; line-height: .9; white-space: pre-line; }
   .heading { margin: 0; font-family: var(--serif); font-size: clamp(2.8rem, 5.6vw, 5.7rem); font-weight: 300; letter-spacing: -.04em; line-height: .98; }
-  .lang-ja .display, .lang-ja .heading { font-family: 'Noto Sans JP', sans-serif; font-weight: 300; letter-spacing: -.06em; line-height: 1.18; }
+  .lang-ja .display, .lang-ja .heading { font-family: var(--jp-sans); font-weight: 300; letter-spacing: -.06em; line-height: 1.18; }
   .lede { max-width: 650px; margin: 32px 0 0; color: var(--muted); font-size: clamp(1rem, 1.4vw, 1.2rem); line-height: 1.9; }
   .button { display: inline-flex; min-height: 54px; padding: 0 24px; border: 1px solid var(--ink); align-items: center; justify-content: center; gap: 18px; font-size: .74rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; transition: background .25s, color .25s; }
   .button::after { content: '↗'; font-size: 1rem; }

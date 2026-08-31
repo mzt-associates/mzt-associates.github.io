@@ -12,7 +12,7 @@ const serviceLinks = [
 const langPath = path ? href(other, path) : href(other);
 ---
 <header class:list={['site-header', `site-header--${theme}`]}>
-  <a class="brand" href={href(lang)} aria-label="MZT & Associates home">
+  <a class="brand" href={href(lang)} aria-label={lang === 'ja' ? 'MZT & Associates ホームへ' : 'MZT & Associates home'}>
     <span class="brand__mark">MZT</span>
     <span class="brand__name">& Associates</span>
   </a>
@@ -23,8 +23,8 @@ const langPath = path ? href(other, path) : href(other);
     <a href={href(lang)}>{t.nav.home}</a>
     <a href={href(lang, 'atelier-lemon/')}>{t.nav.atelier}</a>
     <div class="nav-services">
-      <button type="button" aria-expanded="false">{t.nav.services}<span>＋</span></button>
-      <div class="nav-services__menu">
+      <button type="button" aria-expanded="false" aria-controls="services-menu">{t.nav.services}<span>＋</span></button>
+      <div id="services-menu" class="nav-services__menu">
         {serviceLinks.map(([slug, name]) => <a href={href(lang, `services/${slug}/`)}>{name}</a>)}
       </div>
     </div>
@@ -34,29 +34,65 @@ const langPath = path ? href(other, path) : href(other);
 </header>
 
 <script>
-  let closeActiveMenu = () => {};
+  let closeActiveMenu = (_restoreFocus = true) => {};
+  let cleanupActiveHeader = () => {};
   const setupHeader = () => {
+    cleanupActiveHeader();
     const header = document.querySelector('.site-header');
     const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
     const nav = document.querySelector<HTMLElement>('.site-nav');
     const serviceButton = document.querySelector<HTMLButtonElement>('.nav-services button');
-    closeActiveMenu = () => {
+    const main = document.querySelector<HTMLElement>('main');
+    const footer = document.querySelector<HTMLElement>('.footer');
+    const mobileQuery = window.matchMedia('(max-width: 840px)');
+
+    const setPageInert = (inert: boolean) => {
+      if (main) main.inert = inert;
+      if (footer) footer.inert = inert;
+    };
+
+    const syncClosedState = () => {
+      if (nav) nav.inert = mobileQuery.matches;
+      if (!mobileQuery.matches) {
+        toggle?.setAttribute('aria-expanded', 'false');
+        serviceButton?.setAttribute('aria-expanded', 'false');
+        header?.classList.remove('menu-open');
+        document.documentElement.classList.remove('menu-open');
+        setPageInert(false);
+      }
+    };
+
+    closeActiveMenu = (restoreFocus = true) => {
       toggle?.setAttribute('aria-expanded', 'false');
       serviceButton?.setAttribute('aria-expanded', 'false');
       header?.classList.remove('menu-open');
       document.documentElement.classList.remove('menu-open');
+      if (nav) nav.inert = mobileQuery.matches;
+      setPageInert(false);
+      if (restoreFocus && mobileQuery.matches) toggle?.focus();
     };
+
     toggle?.addEventListener('click', () => {
       const open = toggle.getAttribute('aria-expanded') === 'true';
-      toggle.setAttribute('aria-expanded', String(!open));
-      header?.classList.toggle('menu-open', !open);
-      document.documentElement.classList.toggle('menu-open', !open);
+      if (open) {
+        closeActiveMenu();
+        return;
+      }
+      toggle.setAttribute('aria-expanded', 'true');
+      header?.classList.add('menu-open');
+      document.documentElement.classList.add('menu-open');
+      if (nav) nav.inert = false;
+      setPageInert(true);
+      requestAnimationFrame(() => nav?.querySelector<HTMLAnchorElement>('a')?.focus());
     });
     serviceButton?.addEventListener('click', () => {
       const open = serviceButton.getAttribute('aria-expanded') === 'true';
       serviceButton.setAttribute('aria-expanded', String(!open));
     });
-    nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeActiveMenu));
+    nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => closeActiveMenu(false)));
+    mobileQuery.addEventListener('change', syncClosedState);
+    cleanupActiveHeader = () => mobileQuery.removeEventListener('change', syncClosedState);
+    syncClosedState();
   };
   document.addEventListener('astro:page-load', setupHeader);
   document.addEventListener('keydown', (event) => {

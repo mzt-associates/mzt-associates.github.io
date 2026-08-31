@@ -12,7 +12,12 @@ const serviceEntries = [
   { ...t.services['kiwas-trading'], link: href(lang, 'services/kiwas-trading/') },
 ];
 ---
-<BaseLayout lang={lang} description={t.home.intro} theme="dark">
+<BaseLayout
+  lang={lang}
+  title={lang === 'ja' ? '自然と暮らしをつくる' : 'Architecture, Craft & Nature'}
+  description={t.home.intro}
+  theme="dark"
+>
   <section class="hero">
     <div class="hero__image" aria-hidden="true">
       <picture>

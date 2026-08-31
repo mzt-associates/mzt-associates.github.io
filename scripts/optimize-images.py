@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = ROOT / "public" / "assets" / "img"
 OUTPUT_ROOT = ROOT / "public" / "assets" / "optimized"
 WIDTHS = (480, 768, 1200)
-QUALITY = 82
+QUALITY = 76
 
 USED_IMAGES = (
     "services/atelier.jpg",

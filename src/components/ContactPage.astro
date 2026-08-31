@@ -20,7 +20,13 @@ const details = [
   <section class="contact-details section--compact">
     <div class="container contact-details__grid">
       {details.map(([label, value, link], index) => (
-        <a href={link} class="contact-detail" data-reveal target={index === 1 ? '_blank' : undefined}>
+        <a
+          href={link}
+          class="contact-detail"
+          data-reveal
+          target={index === 1 ? '_blank' : undefined}
+          rel={index === 1 ? 'noopener noreferrer' : undefined}
+        >
           <span>0{index + 1}</span><p>{label}</p><strong>{value}</strong><i>↗</i>
         </a>
       ))}

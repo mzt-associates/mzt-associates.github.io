@@ -56,8 +56,12 @@ const t = copy[lang];
 
   <section class="gallery-section section">
     <div class="container">
-      <div class="gallery-heading" data-reveal><p class="eyebrow">Gallery</p><h2 class="heading">{lang === 'ja' ? '住まいの風景。' : 'Scenes of home.'}</h2></div>
-      <Gallery label={lang === 'ja' ? '施工事例' : 'Project gallery'} />
+      <div class="gallery-heading" data-reveal><p class="eyebrow">Gallery</p><h2 class="heading">{lang === 'ja' ? '住まいの風景。' : 'Scenes from home.'}</h2></div>
+      <Gallery
+        label={lang === 'ja' ? '施工事例' : 'Project gallery'}
+        viewLabel={lang === 'ja' ? '拡大表示' : 'View'}
+        closeLabel={lang === 'ja' ? '閉じる' : 'Close'}
+      />
     </div>
   </section>
   <CTA lang={lang} />

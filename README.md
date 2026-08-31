@@ -20,3 +20,16 @@ npm run build
 ```
 
 The static site is generated in `dist/` and deployed to GitHub Pages by the included workflow.
+
+## Maintenance checks
+
+```sh
+npm run audit:security
+```
+
+Responsive image variants can be regenerated after installing Pillow:
+
+```sh
+python -m pip install Pillow
+npm run optimize:images
+```

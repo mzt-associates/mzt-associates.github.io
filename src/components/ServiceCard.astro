@@ -7,7 +7,7 @@ const { name, label, description, image, href, index } = Astro.props;
   <div class="service-card__image">
     <picture>
       <source type="image/webp" srcset={webpSrcSet(image)} sizes="(max-width: 840px) 100vw, 50vw" />
-      <img src={image} alt="" loading={index > 1 ? 'lazy' : 'eager'} decoding="async" />
+      <img src={image} alt="" loading="lazy" decoding="async" />
     </picture>
   </div>
   <div class="service-card__body">
